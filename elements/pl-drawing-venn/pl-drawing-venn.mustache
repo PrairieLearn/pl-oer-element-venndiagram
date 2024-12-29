@@ -1,0 +1,132 @@
+{{#render_button}}
+<button type="button" name="{{button_class}}" class="btn btn-primary pl-drawing-button tooltip-container" opts="{{{ options }}}"><h3 class="button-header"><i class="{{icon}}"></i></h3><span class="tooltip-text">{{tooltip}}</span></button>
+{{/render_button}}
+
+{{#uuid}}
+
+{{#help_text}}
+<div class="accordion">
+  <div class="accordion-item">
+    <h2 class="accordion-header">
+      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+        Venn Diagram Instructions
+      </button>
+    </h2>
+    <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
+      <div class="accordion-body">
+      <p>Actions:</p>
+      <ul class="instructions-list">
+      {{#button_data}}
+      {{^disabled}}
+        <li>{{{text}}} <i class="{{icon}}"></i> button.</li>
+      {{/disabled}}
+      {{/button_data}}
+      </ul>
+      <p></p>
+      <p>The Venn Diagram will only be graded as correct if:</p>
+      <ul class="instructions-list">
+        {{#insert}}<li>The correct number of circles are present in the diagram.</li>{{/insert}}
+        {{#label}}<li>All circles are correctly labeled.</li>{{/label}}
+        {{#shade}}<li>All regions are shaded correctly.</li>{{/shade}}
+      </ul>
+      </div>
+    </div>
+  </div>
+</div>
+{{/help_text}}
+
+{{#show_buttons}}
+<div id="alerts-parent">
+<div class="alert alert-danger d-flex align-items-center venn-alert d-none" role="alert" id="error-alert">
+  <h5 style="margin-bottom: 0px"><i class="bi bi-exclamation-triangle-fill"></i></h5>
+  <p style="margin-bottom: 0px">Intersecting regions cannot be formed by more than 3 circles.</p>
+</div>
+
+<div class="alert alert-primary d-flex align-items-center venn-alert d-none" role="alert" id="shade-alert">
+  <h5 style="margin-bottom: 0px"><i class="bi bi-info-circle-fill"></i></h5>
+  <p style="margin-bottom: 0px">Shading mode enabled. Click the <i class="bi bi-paint-bucket"></i> icon to stop shading.</p>
+</div>
+
+<div class="alert alert-primary d-flex align-items-center venn-alert d-none" role="alert" id="label-alert">
+  <h5 style="margin-bottom: 0px"><i class="bi bi-info-circle-fill"></i></h5>
+  <p style="margin-bottom: 0px">Labeling mode enabled. Click a circle to begin labeling or click the <i class="bi bi-textarea-t"></i> icon to stop labeling.</p>
+</div>
+
+<div class="alert alert-success d-flex align-items-center venn-alert" id="placeholder-alert">
+  <h5 style="margin-bottom: 0px"><i class="bi bi-check-circle-fill"></i></h5>
+  <p style="margin-bottom: 0px">Alerts as you edit may show up here. Looks good!</p>
+</div>
+</div>
+{{/show_buttons}}
+
+<div id="pl-drawing-venn-{{uuid}}" class="pl-drawing-container">
+  <div>
+    <div class="venn-diagram-score-badge-wrapper">
+    {{#parse_error}}
+        <a
+          role="button"
+          class="btn btn-light border d-flex align-items-center text-danger"
+          data-toggle="popover"
+          data-html="true"
+          title="Invalid Diagram"
+          data-placement="auto"
+          data-trigger="focus"
+          tabindex="0"
+          data-content="{{parse_error}}"
+          style="max-width: 100px; margin-bottom: 0px;"
+        >
+        <span class="mr-1">Invalid</span> <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+        </a>
+      {{/parse_error}}
+      {{#show_score_badge}}
+        {{#is_100}}
+          <span class="badge badge-success">
+              <i class="fa fa-check" aria-hidden="true"></i> 100%
+          </span>
+        {{/is_100}}
+        {{#is_0}}
+          <span class="badge badge-danger" style="margin: 0px;">
+            <i class="fa fa-times" aria-hidden="true"></i> 0%
+          </span>
+        {{/is_0}}
+      {{/show_score_badge}}
+      </div>
+    
+    {{#show_canvas}}
+    <div>
+        <canvas width="500" height="500" id = "drawing_element"> </canvas>
+        {{#submission}}
+        {{#feedback}}
+        <div class="pl-drawing-venn-feedback">
+        <p>Feedback: {{{feedback}}}</p> </div>
+        {{/feedback}}
+        {{/submission}}
+    </div>
+    {{/show_canvas}}
+  </div>
+    
+    {{#show_buttons}}
+        <div class="pl-drawing-sidebar">
+            <input type="hidden" name="{{name}}">
+            {{{btn_markup}}}
+        </div>
+    {{/show_buttons}}
+</div>
+
+<script>
+ (function() {
+     let element = document.getElementById("pl-drawing-venn-{{uuid}}");
+     let options = JSON.parse(`{{{options_json}}}`);
+     let drawingApiInstance = new PLDrawingVennApi();
+     {{^input_answer}}
+     let submitted_answer = null;
+     {{/input_answer}}
+     {{#input_answer}}
+     let submitted_answer = JSON.parse(`{{{input_answer}}}`);
+     {{/input_answer}}
+     $(function() {
+        setupCanvas(drawingApiInstance, element, options, submitted_answer);
+     });
+ })();
+</script>
+{{/uuid}}

@@ -1,0 +1,8 @@
+{
+    "controller": "pl-drawing-venn.py",
+    "dependencies": {
+        "nodeModulesScripts": ["fabric/dist/fabric.js", "lodash/lodash.js"],
+        "elementScripts": ["pl-drawing-venn.js", "objects.js"],
+        "elementStyles": ["pl-drawing-venn.css"]
+    }
+}

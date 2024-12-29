@@ -1,0 +1,17 @@
+<pl-question-panel>
+<p>Given the following Venn Diagram, select the expression that represents the shaded region.</p>
+</pl-question-panel>
+
+<pl-drawing-venn gradable="False" width="400" height="400">
+    <pl-circle-venn x1="150" y1="150" label="A"></pl-circle-venn>
+    <pl-circle-venn x1="250" y1="150" label="B"></pl-circle-venn>
+    <pl-circle-venn x1="200" y1="250" label="C"></pl-circle-venn>
+    <pl-region-venn region="A&B&C"></pl-region-venn>
+</pl-drawing-venn>
+
+<pl-multiple-choice answers-name="mcq" weight="1">
+    <pl-answer correct="true">$A \cap B \cap C$</pl-answer>
+    <pl-answer correct="false">$A \cup B \cup C$</pl-answer>
+    <pl-answer correct="false">$(A \cap B) \cup C$</pl-answer>
+    <pl-answer correct="false">$A' \cap B' \cap C'$</pl-answer>
+</pl-multiple-choice>

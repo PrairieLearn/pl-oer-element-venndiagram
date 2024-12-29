@@ -1,0 +1,137 @@
+.pl-drawing-button {
+    width: 50px;
+    height: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.button-header {
+    display: flex;
+    justify-content: center;
+}
+
+@media screen and (max-width: 767px) {
+    .pl-drawing-sidebar {
+        margin-top: 20px;
+        display: flex;
+        justify-content: space-evenly;
+    }
+    .pl-drawing-sidebar button {
+        flex: 2px;
+        box-sizing: border-box;
+    }
+    .pl-drawing-container {
+        display: block;
+    }
+}
+
+@media screen and (min-width:768px) {
+    .pl-drawing-container {
+        display: flex;
+        justify-content: space-around;
+    }
+    .pl-drawing-sidebar {
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+    }
+}
+
+.pl-drawing-container {
+    margin-bottom: 20px;
+}
+
+.pl-drawing-venn-feedback {
+    border-left: 0.25rem solid rgba(0, 0, 0, 0);
+    background-color: rgba(0, 0, 0, 0.03);
+    padding: 0.5rem 0.5rem 0.5rem 0.5rem;
+    margin-right: 0.5rem;
+    border-radius: 0.2rem;
+}
+
+.instructions-list {
+    margin: 0;
+}
+
+.accordion {
+    margin-bottom: 20px;
+}
+
+.accordion-button {
+    background-color: #E7F1FF;
+    color: #0D62E4;
+}
+
+.venn-diagram-score-badge-wrapper {
+    text-align: center;
+    display: flex;
+    width: 100%;
+    position: relative;
+    margin-bottom: 20px;
+    align-items: center;
+    justify-content: center;
+}
+
+.venn-diagram-badge {
+    font-size: 12px;
+    font-family: Arial, sans-serif;
+    font-weight: bold;
+    padding: 8px 15px;
+    border-radius: 5px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: white;
+    text-align: center;
+}
+
+.venn-diagram-badge-success {
+    background-color: #1d7832;
+}
+
+.venn-diagram-badge-danger {
+    background-color: #dc3545;
+}
+
+.venn-diagram-badge .icon {
+    font-size: 12px;
+    color: white;
+}
+
+.venn-alert {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    vertical-align: center;
+    padding-left: 25px;
+    margin-bottom: 10px;
+}
+
+.tooltip-container {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+}
+
+.tooltip-container .tooltip-text {
+    visibility: hidden;
+    width: 100px;
+    background-color: black;
+    color: #fff;
+    text-align: center;
+    border-radius: 4px;
+    padding: 5px;
+    position: absolute;
+    z-index: 0.8;
+    bottom: 125%;
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.tooltip-container:hover .tooltip-text {
+    visibility: visible;
+    opacity: 1;
+}
