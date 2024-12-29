@@ -5,15 +5,14 @@ This element was developed by Noah Gersich, Brian Yoon, and Keerthana Sunder. Pl
 If you like this element, you can use it in your own PrairieLearn course by copying the contents of the `elements` folder into your own course repository. After syncing, the element can be used as illustrated by the example question that is also contained in this repository.
 
 
-### `pl-drawing-venn` element
+## `pl-drawing-venn` element
 
 This element creates a canvas for Venn diagrams that can be used both for interactive questions and to display instructional materials. Overlapping regions in the diagram can be colored, and the correct placement and coloring of regions can be auto-graded.
 
 
-#### Example 1: Non-interactive instructional material
-![image](example-static.png)
+### Example 1: Non-interactive instructional material
 
-**question.html**
+<img src="example-static.png" width="400">
 
 ```html
 <pl-drawing-venn gradable="false" width="400" height="400">
@@ -25,7 +24,8 @@ This element creates a canvas for Venn diagrams that can be used both for intera
 ```
 
 ### Example 2: Interactive coloring of an existing diagram
-![image](example-fill.png)
+
+<img src="example-fill.png" width="400">
 
 ```html
 <pl-drawing-venn answers-name="venn" disable-labeling="true" disable-movement="true" correct-answer="~(A&B)|C">
@@ -38,7 +38,8 @@ This element creates a canvas for Venn diagrams that can be used both for intera
 ```
 
 ### Example 3: Fully interactive drawing and coloring of a diagram
-![image](example-draw.png)
+
+<img src="example-draw.png" width="400">
 
 ```html
 <pl-drawing-venn answers-name="venn" include-sample-space="true" correct-answer="~(A&B)">
@@ -68,7 +69,9 @@ This element creates a canvas for Venn diagrams that can be used both for intera
 | `disable-sample-space` | boolean (default: `false`)  | Only relevant if `gradable` is `true`. If set to `true`, students will not have the ability to shade the sample space. Additionally, the sample space will not be graded for correctness. |
 
 
-To create a drawing `pl-circle-venn` and `pl-region-venn` elements must be placed inside the `pl-drawing-venn` element to draw circles and shade overlapping regions. If `gradable` is set to `false`, these elements are immediately drawn to be used as question materials. If `gradable` is set to `true`, they are only shown in the answer panel (unless disabled, see `hide-answer-panel`). To provide a non-empty starting canvas for students if `gradable` is set to `true`, elements can be wrapped inside a `pl-drawing-venn-initial` element.
+### Drawing Venn diagrams inside `question.html`
+
+To create a drawing, `pl-circle-venn` and `pl-region-venn` elements must be placed inside the `pl-drawing-venn` element to draw circles and shade overlapping regions. If `gradable` is set to `false`, these elements are immediately drawn to be used as question materials. If `gradable` is set to `true`, they are only shown in the answer panel (unless disabled, see `hide-answer-panel`). To provide a non-empty starting canvas for students if `gradable` is set to `true`, elements can be wrapped inside a `pl-drawing-venn-initial` element.
 
 
 #### Sub-Element: `pl-circle-venn`
@@ -86,7 +89,7 @@ To create a drawing `pl-circle-venn` and `pl-region-venn` elements must be place
 | `region` | string (required)| A region of the diagram to shade. See the description of `correct-answer` above for more details. |
 
 
-### Sub-Element: `pl-drawing-venn-initial`
+#### Sub-Element: `pl-drawing-venn-initial`
 
 This element has no attributes. It is used to wrap `pl-circle-venn` and `pl-region-venn` elements that are initially shown on the canvas when `gradable=true`. 
 
