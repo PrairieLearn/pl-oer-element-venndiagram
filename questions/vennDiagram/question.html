@@ -16,7 +16,9 @@
     <pl-question-panel>
     <p>If the <code>gradable</code> attribute is set to <code>false</code>, Venn diagrams
     are rendered statically and can be used as instructor-provided material for a question. 
-    In this example, 3 circles are drawn and their overlapping area is shaded.</p>
+    In this example, 3 circles are drawn and their overlapping area is shaded. The size
+    of the canvas can be adjusted through the <code>width</code> and <code>height</code>
+    attributes.</p>
     </pl-question-panel>
     <pl-drawing-venn answers-name="q1" gradable="false" width="400" height="400">
         <pl-circle-venn x1="150" y1="150" label="A"></pl-circle-venn>
@@ -34,10 +36,11 @@
     <p>By default, Venn diagrams are fully editable, allowing students to add, delete, 
     move, label circles and shade their overlapping areas. The result can be auto-graded
     based on whether the correct overlapping area between labeled circles is shaded, 
-    ignoring the exact placement of each circle. In this example, all regions excluding
-    the area where the circles overlap should be shaded in a correct answer.</p>
+    ignoring the exact placement of each circle. In this example, two circles 
+    <strong>A</strong> and <strong>B</strong> must be created, and the region where they
+    overlap must be shaded.</p>
     </pl-question-panel>
-    <pl-drawing-venn answers-name="q2" disable-sample-space="true" correct-answer="~(A&B)">
+    <pl-drawing-venn answers-name="q2" correct-answer="A&B">
         <pl-circle-venn x1="200" y1="150" label="A"></pl-circle-venn>
         <pl-circle-venn x1="300" y1="150" label="B"></pl-circle-venn>
     </pl-drawing-venn>
@@ -51,10 +54,11 @@
     <p>Because student-defined labels need to match the expected ones exactly, it can be
     preferrable to pre-define circles and disable re-labeling or adding/removing circles
     by setting the <code>disable-labeling</code> and <code>disable-insertion</code> attributes
-    to <code>true</code>. Here, the 3 circles need to be moved to overlap, and the overlapping
-    region must be shaded.</p>
+    to <code>true</code>. In this example, <code>disable-sample-space</code> is also set
+    to true so that the space surrounding the circles cannot be shaded. Here, the 3 circles 
+    must be moved to overlap, and the overlapping region must be shaded.</p>
     </pl-question-panel>
-    <pl-drawing-venn answers-name="q3" disable-labeling="true" disable-insertion="true" correct-answer="A&B&C">
+    <pl-drawing-venn answers-name="q3" disable-labeling="true" disable-insertion="true" disable-sample-space="true" correct-answer="A&B&C">
         <pl-drawing-venn-initial>
             <pl-circle-venn x1="200" y1="150" label="A"></pl-circle-venn>
             <pl-circle-venn x1="300" y1="150" label="B"></pl-circle-venn>

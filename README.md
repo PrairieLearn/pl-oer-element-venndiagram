@@ -68,7 +68,7 @@ Note that the shading of both non-interactive and interactive diagrams is limite
 | `hide-score-badge` | boolean (default: `false`) | Only relevant if `gradable` is `true`. If set to `true`, no score badge will be shown above the canvas to give students feedback on their submission. |
 | `hide-answer-panel` | boolean (default: `false`) | Only relevant if `gradable` is `true`. If set to `true`, the correct answer is not shown to students after they submit their answer. |
 | `hide-help-text` | boolean (default: `false`) | Only relevant if `gradable` is `true`. If set to `true`, the help text that contains the instructions on how to use drawing canvas is disabled. |
-| `disable-sample-space` | boolean (default: `false`)  | Only relevant if `gradable` is `true`. If set to `true`, students will not have the ability to shade the sample space. Additionally, the sample space will not be graded for correctness. |
+| `disable-sample-space` | boolean (default: `false`)  | Only relevant if `gradable` is `true`. If set to `true`, students will not have the ability to shade the sample space, i.e., the area that surrounds the circles. This space will also be ignored when verifying the `correct-answer`. |
 
 
 ### Drawing Venn diagrams inside `question.html`
