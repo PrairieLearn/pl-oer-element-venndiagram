@@ -18,6 +18,15 @@
             ]
         },
         {
+        "title": "More sample questions", 
+            "questions": [
+                { "id": "mcqExample",                "points": 1},
+                { "id": "shadeWithDescription",      "points": 1},
+                { "id": "vacationExample",           "points": 1},
+                { "id": "companyExample",            "points": 1}                   
+            ]
+        }
+        {
 	    "title": "How to use this element in your course", 
             "questions": [
                 { "id": "howTo",                     "points": 0}                 
