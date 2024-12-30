@@ -12,7 +12,7 @@ This element creates a canvas for Venn diagrams that can be used both for intera
 
 ### Example 1: Non-interactive instructional material
 
-<img src="example-static.png" width="400">
+<img src="example-static.png" width="500">
 
 ```html
 <pl-drawing-venn gradable="false" width="400" height="400">
@@ -25,7 +25,7 @@ This element creates a canvas for Venn diagrams that can be used both for intera
 
 ### Example 2: Interactive coloring of an existing diagram
 
-<img src="example-fill.png" width="400">
+<img src="example-fill.png" width="500">
 
 ```html
 <pl-drawing-venn answers-name="venn" disable-labeling="true" disable-movement="true" correct-answer="~(A&B)|C">
@@ -39,7 +39,7 @@ This element creates a canvas for Venn diagrams that can be used both for intera
 
 ### Example 3: Fully interactive drawing and coloring of a diagram
 
-<img src="example-draw.png" width="400">
+<img src="example-draw.png" width="500">
 
 ```html
 <pl-drawing-venn answers-name="venn" include-sample-space="true" correct-answer="~(A&B)">
@@ -47,6 +47,8 @@ This element creates a canvas for Venn diagrams that can be used both for intera
     <pl-circle-venn x1="300" y1="150" label="B"></pl-circle-venn>
 </pl-drawing-venn>
 ```
+
+Note that the shading of both non-interactive and interactive diagrams is limited to regions where at most 3 circles overlap. A warning will be displayed if students try to create diagrams with more overlapping areas, and pre-defined canvases with such overlaps may not work as expected.
 
 
 ### Element Attributes

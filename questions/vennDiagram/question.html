@@ -1,12 +1,85 @@
 <pl-question-panel>
-    <p> An example Venn Diagram is shown below. The diagram expects three circles with labels $A$, $B$, and $C$. Shade the region $A \cap B \cap C$.</p>
+  <p>
+    The questions below were designed to showcase the different features of
+    <code>pl-drawing-venn</code>. The goal of this element is to simplify the 
+    rendering of Venn diagrams, and to support interactive questions where 
+    students create and shade their own diagrams. This element has many 
+    customization options that are documented in the README file in its 
+    repository.
+  </p>
 </pl-question-panel>
 
-<pl-drawing-venn answers-name="venn" correct-answer="A & B & C">
-    <pl-drawing-venn-initial>
-        <pl-circle-venn label="A" x1="200" y1="200"></pl-circle-venn>
-        <pl-circle-venn label="B" x1="300" y1="200"></pl-circle-venn>
-        <pl-circle-venn label="C" x1="250" y1="300"></pl-circle-venn>
-    </pl-drawing-venn-initial>
-</pl-drawing-venn>  
 
+<div class="card my-2">
+  <div class="card-header">Part 1</div>
+  <div class="card-body">
+    <pl-question-panel>
+    <p>If the <code>gradable</code> attribute is set to <code>false</code>, Venn diagrams
+    are rendered statically and can be used as instructor-provided material for a question. 
+    In this example, 3 circles are drawn and their overlapping area is shaded.</p>
+    </pl-question-panel>
+    <pl-drawing-venn answers-name="q1" gradable="false" width="400" height="400">
+        <pl-circle-venn x1="150" y1="150" label="A"></pl-circle-venn>
+        <pl-circle-venn x1="250" y1="150" label="B"></pl-circle-venn>
+        <pl-circle-venn x1="200" y1="250" label="C"></pl-circle-venn>
+        <pl-region-venn region="A&B&C"></pl-region-venn>
+    </pl-drawing-venn>
+  </div>
+</div>
+
+<div class="card my-2">
+  <div class="card-header">Part 2</div>
+  <div class="card-body">
+    <pl-question-panel>
+    <p>By default, Venn diagrams are fully editable, allowing students to add, delete, 
+    move, label circles and shade their overlapping areas. The result can be auto-graded
+    based on whether the correct overlapping area between labeled circles is shaded, 
+    ignoring the exact placement of each circle. In this example, all regions excluding
+    the area where the circles overlap should be shaded in a correct answer.</p>
+    </pl-question-panel>
+    <pl-drawing-venn answers-name="q3" include-sample-space="true" correct-answer="~(A&B)">
+        <pl-circle-venn x1="200" y1="150" label="A"></pl-circle-venn>
+        <pl-circle-venn x1="300" y1="150" label="B"></pl-circle-venn>
+    </pl-drawing-venn>
+  </div>
+</div>
+
+<div class="card my-2">
+  <div class="card-header">Part 3</div>
+  <div class="card-body">
+    <pl-question-panel>
+    <p>Because student-defined labels need to match the expected ones exactly, it can be
+    preferrable to pre-define circles and disable re-labeling or adding/removing circles
+    by setting the <code>disable-labeling</code> and <code>disable-insertion</code> attributes
+    to <code>true</code>. Here, the 3 circles need to be moved to overlap, and the overlapping
+    region must be shaded.</p>
+    </pl-question-panel>
+    <pl-drawing-venn answers-name="q3" disable-labeling="true" disable-insertion="true" correct-answer="A&B&C">
+        <pl-drawing-venn-initial>
+            <pl-circle-venn x1="200" y1="150" label="A"></pl-circle-venn>
+            <pl-circle-venn x1="300" y1="150" label="B"></pl-circle-venn>
+            <pl-circle-venn x1="250" y1="400" label="C"></pl-circle-venn>
+        </pl-drawing-venn-initial>
+    </pl-drawing-venn>
+  </div>
+</div>
+
+<div class="card my-2">
+  <div class="card-header">Part 4</div>
+  <div class="card-body">
+    <pl-question-panel>
+    <p>In this variant of the previous question, moving circles is disabled by setting
+    <code>disable-movement</code> to <code>true</code>. This also disables adding/removing
+    circles, and reduces the degree of freedom for students to only shading the existing
+    circles. Here, the overlapping region between A and B, as well as the entire circle C
+    must be shaded.</p>
+    </pl-question-panel>
+    <pl-drawing-venn answers-name="q4" disable-labeling="true" disable-movement="true" correct-answer="(A&B)|C">
+        <pl-drawing-venn-initial>
+            <pl-circle-venn x1="200" y1="150" label="A"></pl-circle-venn>
+            <pl-circle-venn x1="300" y1="150" label="B"></pl-circle-venn>
+            <pl-circle-venn x1="250" y1="400" label="C"></pl-circle-venn>
+        </pl-drawing-venn-initial>
+    </pl-drawing-venn>
+  </div>
+</div>
