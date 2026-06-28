@@ -66,26 +66,26 @@
         <a
           role="button"
           class="btn btn-light border d-flex align-items-center text-danger"
-          data-toggle="popover"
-          data-html="true"
+          data-bs-toggle="popover"
+          data-bs-html="true"
           title="Invalid Diagram"
-          data-placement="auto"
-          data-trigger="focus"
+          data-bs-placement="auto"
+          data-bs-trigger="focus"
           tabindex="0"
-          data-content="{{parse_error}}"
+          data-bs-content="{{parse_error}}"
           style="max-width: 100px; margin-bottom: 0px;"
         >
-        <span class="mr-1">Invalid</span> <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+        <span class="me-1">Invalid</span> <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
         </a>
       {{/parse_error}}
       {{#show_score_badge}}
         {{#is_100}}
-          <span class="badge badge-success">
+          <span class="badge text-bg-success">
               <i class="fa fa-check" aria-hidden="true"></i> 100%
           </span>
         {{/is_100}}
         {{#is_0}}
-          <span class="badge badge-danger" style="margin: 0px;">
+          <span class="badge text-bg-danger" style="margin: 0px;">
             <i class="fa fa-times" aria-hidden="true"></i> 0%
           </span>
         {{/is_0}}
