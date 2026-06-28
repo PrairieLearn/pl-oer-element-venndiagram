@@ -60,10 +60,12 @@ class Circle(BaseElement):
             "selectable",
         ]
 
+
 elements["pl-circle-venn"] = Circle
 
 # Store elements that have been registered via extensions
 registered_elements = {}
+
 
 # Helper Functions
 def generate(element, name, defaults={}):
@@ -78,8 +80,8 @@ def generate(element, name, defaults={}):
         if gradingName is None:
             gradingName = name
 
-        #obj["gradingName"] = gradingName
-        #obj["type"] = gradingName
+        # obj["gradingName"] = gradingName
+        # obj["type"] = gradingName
         return obj
     else:
         return {}
