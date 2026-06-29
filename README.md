@@ -42,7 +42,7 @@ This element creates a canvas for Venn diagrams that can be used both for intera
 <img src="example-draw.png" width="500">
 
 ```html
-<pl-drawing-venn answers-name="venn" include-sample-space="true" correct-answer="~(A&B)">
+<pl-drawing-venn answers-name="venn" disable-sample-space="false" correct-answer="~(A&B)">
     <pl-circle-venn x1="200" y1="150" label="A"></pl-circle-venn>
     <pl-circle-venn x1="300" y1="150" label="B"></pl-circle-venn>
 </pl-drawing-venn>
