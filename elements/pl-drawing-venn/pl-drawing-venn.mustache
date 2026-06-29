@@ -4,62 +4,17 @@
 
 {{#uuid}}
 
-{{#help_text}}
-<div class="accordion">
-  <div class="accordion-item">
-    <h2 class="accordion-header">
-      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-        Venn Diagram Instructions
-      </button>
-    </h2>
-    <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
-      <div class="accordion-body">
-      <p>Actions:</p>
-      <ul class="instructions-list">
-      {{#button_data}}
-      {{^disabled}}
-        <li>{{{text}}} <i class="{{icon}}"></i> button.</li>
-      {{/disabled}}
-      {{/button_data}}
-      </ul>
-      <p></p>
-      <p>The Venn Diagram will only be graded as correct if:</p>
-      <ul class="instructions-list">
-        {{#insert}}<li>The correct number of circles are present in the diagram.</li>{{/insert}}
-        {{#label}}<li>All circles are correctly labeled.</li>{{/label}}
-        {{#shade}}<li>All regions are shaded correctly.</li>{{/shade}}
-      </ul>
+<div id="pl-drawing-venn-{{uuid}}" class="pl-drawing-container">
+  {{#editable}}
+  <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1080">
+    <div class="toast align-items-center text-bg-primary border-0 venn-toast" role="status" aria-live="polite" aria-atomic="true">
+      <div class="d-flex">
+        <div class="toast-body"></div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
       </div>
     </div>
   </div>
-</div>
-{{/help_text}}
-
-{{#show_buttons}}
-<div id="alerts-parent">
-<div class="alert alert-danger d-flex align-items-center venn-alert d-none" role="alert" id="error-alert">
-  <h5 style="margin-bottom: 0px"><i class="bi bi-exclamation-triangle-fill"></i></h5>
-  <p style="margin-bottom: 0px">Intersections of more than 3 circles cannot be shaded!</p>
-</div>
-
-<div class="alert alert-primary d-flex align-items-center venn-alert d-none" role="alert" id="shade-alert">
-  <h5 style="margin-bottom: 0px"><i class="bi bi-info-circle-fill"></i></h5>
-  <p style="margin-bottom: 0px">Shading mode enabled. Click the <i class="bi bi-paint-bucket"></i> icon to stop shading.</p>
-</div>
-
-<div class="alert alert-primary d-flex align-items-center venn-alert d-none" role="alert" id="label-alert">
-  <h5 style="margin-bottom: 0px"><i class="bi bi-info-circle-fill"></i></h5>
-  <p style="margin-bottom: 0px">Labeling mode enabled. Click a circle to begin labeling or click the <i class="bi bi-textarea-t"></i> icon to stop labeling.</p>
-</div>
-
-<div class="alert alert-success d-flex align-items-center venn-alert" id="placeholder-alert">
-  <h5 style="margin-bottom: 0px"><i class="bi bi-check-circle-fill"></i></h5>
-  <p style="margin-bottom: 0px">Alerts may show up here as you edit the Venn diagram below. Looks good!</p>
-</div>
-</div>
-{{/show_buttons}}
-
-<div id="pl-drawing-venn-{{uuid}}" class="pl-drawing-container">
+  {{/editable}}
   <div>
     <div class="venn-diagram-score-badge-wrapper">
     {{#parse_error}}
@@ -93,7 +48,40 @@
       </div>
     
     {{#show_canvas}}
-    <div>
+    <div class="pl-drawing-canvas-wrapper">
+        {{#help_text}}
+        <button
+          type="button"
+          class="btn btn-primary venn-instructions-button"
+          data-venn-instructions-toggle="true"
+          aria-label="Venn diagram instructions"
+          aria-expanded="false"
+        >
+          <i class="bi bi-info-lg" aria-hidden="true"></i>
+        </button>
+        <div class="venn-instructions-panel d-none" role="dialog" aria-modal="true" aria-labelledby="venn-instructions-title-{{uuid}}">
+          <div class="venn-instructions-panel-header">
+            <h5 id="venn-instructions-title-{{uuid}}">Venn Diagram Instructions</h5>
+            <button type="button" class="btn-close" data-venn-instructions-close="true" aria-label="Close"></button>
+          </div>
+          <div class="venn-instructions-panel-body">
+            <p>Actions:</p>
+            <ul class="instructions-list">
+            {{#button_data}}
+            {{^disabled}}
+              <li>{{{text}}} <i class="{{icon}}"></i> button.</li>
+            {{/disabled}}
+            {{/button_data}}
+            </ul>
+            <p class="mt-3">The Venn Diagram will only be graded as correct if:</p>
+            <ul class="instructions-list">
+              {{#insert}}<li>The correct number of circles are present in the diagram.</li>{{/insert}}
+              {{#label}}<li>All circles are correctly labeled.</li>{{/label}}
+              {{#shade}}<li>All regions are shaded correctly.</li>{{/shade}}
+            </ul>
+          </div>
+        </div>
+        {{/help_text}}
         <canvas width="500" height="500" id = "drawing_element"> </canvas>
         {{#submission}}
         {{#feedback}}
@@ -105,9 +93,11 @@
     {{/show_canvas}}
   </div>
     
+    {{#editable}}
+        <input type="hidden" name="{{name}}">
+    {{/editable}}
     {{#show_buttons}}
         <div class="pl-drawing-sidebar">
-            <input type="hidden" name="{{name}}">
             {{{btn_markup}}}
         </div>
     {{/show_buttons}}

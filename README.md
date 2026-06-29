@@ -59,6 +59,7 @@ Note that the shading of both non-interactive and interactive diagrams is limite
 | `width` | integer (default: `500`) | Horizontal width of the canvas (in pixels). |
 | `height` | integer (default: `500`) | Vertical height of the canvas (in pixels). |
 | `circle-radius` | integer (default: `80`) | The radius of the circles (in pixels) in the canvas. |
+| `label-position` | string (default: `above`) | Position of circle labels relative to their circles. Must be one of `above`, `below`, or `center`. |
 | `gradable` | boolean (default: `true`) | If set to `true`, the element is interactive and will be graded. Otherwise, the diagram will be used for display only. |
 | `correct-answer` | string (required if gradable) | Only relevant if `gradable` is `true`. Correct coloring of regions to be checked during grading. This should be specified as an expression that uses the labels of circles and set operators (e.g., `A&B` if the overlapping region of the circles A and B must be colored in a correct answer). The following set operations are supported: complement (`~` or `!`), union (`_U_`, `_u_`, or `\|`), intersection (`^`, `&`, `_i_`, or `_I_`), and set difference (`-`). Alternatively, this can also be specified as a list of unions in square brackets (e.g., `[A^B, B^C]` is equivalent to `(A^B) \| (B^C)`). |
 | `disable-insertion` | boolean (default: `false`)  | Only relevant if `gradable` is `true`. If set to `true`, students will not be able to insert and delete circles in the canvas. |
@@ -68,12 +69,23 @@ Note that the shading of both non-interactive and interactive diagrams is limite
 | `hide-score-badge` | boolean (default: `false`) | Only relevant if `gradable` is `true`. If set to `true`, no score badge will be shown above the canvas to give students feedback on their submission. |
 | `hide-answer-panel` | boolean (default: `false`) | Only relevant if `gradable` is `true`. If set to `true`, the correct answer is not shown to students after they submit their answer. |
 | `hide-help-text` | boolean (default: `false`) | Only relevant if `gradable` is `true`. If set to `true`, the help text that contains the instructions on how to use drawing canvas is disabled. |
+| `hide-tool-buttons` | boolean (default: `false`) | Only relevant if `gradable` is `true`. If set to `true`, the insert, delete, label, and shade buttons are hidden, but students can still use the canvas and keyboard shortcuts. |
 | `disable-sample-space` | boolean (default: `false`)  | Only relevant if `gradable` is `true`. If set to `true`, students will not have the ability to shade the sample space, i.e., the area that surrounds the circles. This space will also be ignored when verifying the `correct-answer`. |
 
 
 ### Drawing Venn diagrams inside `question.html`
 
 To create a drawing, `pl-circle-venn` and `pl-region-venn` elements must be placed inside the `pl-drawing-venn` element to draw circles and shade overlapping regions. If `gradable` is set to `false`, these elements are immediately drawn to be used as question materials. If `gradable` is set to `true`, they are only shown in the answer panel (unless disabled, see `hide-answer-panel`). To provide a non-empty starting canvas for students if `gradable` is set to `true`, elements can be wrapped inside a `pl-drawing-venn-initial` element.
+
+Labels are shown above circles by default. Use `label-position="below"` or `label-position="center"` to change the placement for all circles in a diagram.
+
+```html
+<pl-drawing-venn gradable="false" width="400" height="300" label-position="center">
+    <pl-circle-venn x1="160" y1="150" label="A"></pl-circle-venn>
+    <pl-circle-venn x1="240" y1="150" label="B"></pl-circle-venn>
+    <pl-region-venn region="A&B"></pl-region-venn>
+</pl-drawing-venn>
+```
 
 
 #### Sub-Element: `pl-circle-venn`

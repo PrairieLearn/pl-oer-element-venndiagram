@@ -16,12 +16,15 @@ DISABLE_SAMPLE_SPACE_DEFAULT = False
 HIDE_HELP_TEXT_DEFAULT = False
 HIDE_ANSWER_PANEL_DEFAULT = False
 HIDE_SCORE_BADGE_DEFAULT = False
+HIDE_TOOL_BUTTONS_DEFAULT = False
 CORRECT_ANSWER_DEFAULT = ""
 DISABLE_INSERTION_DEFAULT = False
 DISABLE_LABELING_DEFAULT = False
 DISABLE_SHADING_DEFAULT = False
 DISABLE_MOVEMENT_DEFAULT = False
 CIRCLE_RADIUS_DEFAULT = 80
+LABEL_POSITION_DEFAULT = "above"
+LABEL_POSITIONS = {"above", "below", "center"}
 
 
 class DisplayType(Enum):
@@ -210,6 +213,7 @@ def prepare(element_html: str, data: pl.QuestionData) -> None:
         "disable-sample-space",
         "hide-help-text",
         "hide-score-badge",
+        "hide-tool-buttons",
         "width",
         "height",
         "correct-answer",
@@ -218,6 +222,7 @@ def prepare(element_html: str, data: pl.QuestionData) -> None:
         "disable-shading",
         "circle-radius",
         "disable-movement",
+        "label-position",
     ]
     pl.check_attribs(element, required_attribs, optional_attribs)
 
@@ -238,7 +243,12 @@ def prepare(element_html: str, data: pl.QuestionData) -> None:
     height = pl.get_integer_attrib(
         element, "height", defaults.element_defaults["height"]
     )
+    label_position = pl.get_string_attrib(
+        element, "label-position", LABEL_POSITION_DEFAULT
+    )
 
+    if label_position not in LABEL_POSITIONS:
+        raise Exception('Label position must be one of "above", "below", or "center".')
     if circle_radius <= 0:
         raise Exception("Default circle radius must be positive.")
     if circle_radius * 2 >= width or circle_radius * 2 >= height:
@@ -357,6 +367,9 @@ def render(element_html: str, data: pl.QuestionData) -> str:
     disable_shade = pl.get_boolean_attrib(
         element, "disable-shading", DISABLE_SHADING_DEFAULT
     )
+    show_tool_buttons = not pl.get_boolean_attrib(
+        element, "hide-tool-buttons", HIDE_TOOL_BUTTONS_DEFAULT
+    )
 
     format_errors = data["format_errors"].get(name, None)
     valid_for_grading = format_errors is None and graded
@@ -426,6 +439,9 @@ def render(element_html: str, data: pl.QuestionData) -> str:
         "default_radius": pl.get_integer_attrib(
             element, "circle-radius", CIRCLE_RADIUS_DEFAULT
         ),
+        "label_position": pl.get_string_attrib(
+            element, "label-position", LABEL_POSITION_DEFAULT
+        ),
         "disable_movement": pl.get_boolean_attrib(
             element, "disable-movement", DISABLE_MOVEMENT_DEFAULT
         ),
@@ -441,7 +457,8 @@ def render(element_html: str, data: pl.QuestionData) -> str:
         "uuid": uuid,
         "name": name,
         "btn_markup": btn_markup,
-        "show_buttons": editable,
+        "editable": editable,
+        "show_buttons": editable and show_tool_buttons,
         "input_answer": json.dumps(init),
         "options_json": json.dumps(js_options),
         "show_canvas": data["panel"] == "question"

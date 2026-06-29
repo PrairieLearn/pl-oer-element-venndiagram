@@ -28,6 +28,8 @@ class PLDrawingVennApi {
         this.waitingForLabel = false;
         this.disableMovement = false;
         this.alerts = {};
+        this.rootElem = null;
+        this.labelPosition = "above";
     }
 
     registerElements(extensionName, dictionary) {
@@ -61,13 +63,37 @@ class PLDrawingVennApi {
         return -1;
     }
 
+    getCircleByLabel(label) {
+        for (let id of Object.keys(this.circleLabels)) {
+            if (this.circleLabels[id] === label) {
+                return this.circles[id];
+            }
+        }
+        return null;
+    }
+
+    isLabelTarget(target) {
+        return this.getCircleByLabel(target) !== null;
+    }
+
+    editLabelFromTarget(canvas, target) {
+        if (this.disabled_actions["label"] || this.isLabeling || !this.isLabelTarget(target)) {
+            return false;
+        }
+
+        const circle = this.getCircleByLabel(target);
+        canvas.setActiveObject(circle);
+        this.toggleLabelingMode(canvas, false);
+        return true;
+    }
+
     generateID() {
         return this._circle_id_counter++;
     }
 
     addCircle(canvas, circle) {
         if (Object.keys(this.circles).length >= 10) {
-            alert("A maximum of 10 circles may be inserted into the canvas.");
+            this.addAlert("max_circles", "error-alert", "A maximum of 10 circles may be inserted into the canvas.");
             return false;
         }
         let new_id = this.generateID();
@@ -95,15 +121,6 @@ class PLDrawingVennApi {
         this.submittedAnswer._answerData.objects = this.circles;
         this.updateOverlap(canvas);
         return true;
-    }
-
-    checkCurrentAlerts() {
-        let placeholder_alert = $("#placeholder-alert");
-        if (Object.keys(this.alerts).length > 0) {
-            placeholder_alert.addClass("d-none");
-        } else {
-            placeholder_alert.removeClass("d-none");
-        }
     }
 
     /**
@@ -212,8 +229,6 @@ class PLDrawingVennApi {
             if (button_click) {
                 this.waitingForLabel = true;
                 this.addAlert("label_alert", "label-alert");
-                // $("#label-alert").removeClass('d-none');
-                this.checkCurrentAlerts();
             }
             return;
         }
@@ -272,7 +287,6 @@ class PLDrawingVennApi {
             this.isLabeling = false;
             this.submittedAnswer.updateObject(circle);
             this.removeAlert("label_alert");
-            this.checkCurrentAlerts();
         });
     }
 
@@ -285,6 +299,7 @@ class PLDrawingVennApi {
             fontSize: editableLabel.fontSize,
             selectable: false,
             hasControls: false,
+            hoverCursor: 'text',
         });
         this.circleLabels[circleId] = fixedLabel;
         canvas.add(fixedLabel);
@@ -381,21 +396,37 @@ class PLDrawingVennApi {
         if (circle_id in this.circleLabels) {
             return;
         }
+        const labelCoordinates = this.getLabelCoordinates(circle);
 
         const label = new fabric.Text(label_name, {
-            left: circle.left,
-            top: circle.top - (circle.radius || 0) - 20,
-            originX: 'center',
-            originY: 'bottom',
+            left: labelCoordinates.left,
+            top: labelCoordinates.top,
+            originX: labelCoordinates.originX,
+            originY: labelCoordinates.originY,
             fontSize: 20,
             selectable: false,
             hasControls: false,
+            hoverCursor: 'text',
         });
 
         this.circleLabels[circle_id] = label;
         circle.set({ label: label_name });
         canvas.add(label);
         canvas.renderAll();
+    }
+
+    getLabelCoordinates(circle, coordinates = null) {
+        const left = coordinates ? coordinates[0] : circle.left;
+        const top = coordinates ? coordinates[1] : circle.top;
+        const radius = circle.radius || 0;
+
+        if (this.labelPosition === "center") {
+            return { left, top, originX: "center", originY: "center" };
+        }
+        if (this.labelPosition === "below") {
+            return { left, top: top + radius + 20, originX: "center", originY: "top" };
+        }
+        return { left, top: top - radius - 20, originX: "center", originY: "bottom" };
     }
 
 
@@ -503,7 +534,8 @@ class PLDrawingVennApi {
             let new_coordinates = this.getCoordinates(this.circles[id], group_object, active_objects);
             let label = this.circleLabels[id];
             if (label) {
-                label.set({ left: new_coordinates[0], top: new_coordinates[1] - (this.circles[id].radius || 0) - 20 })
+                label.set(this.getLabelCoordinates(this.circles[id], new_coordinates));
+                label.bringToFront();
             }
         }
         canvas.renderAll();
@@ -513,22 +545,46 @@ class PLDrawingVennApi {
         if (!["error-alert", "label-alert", "shade-alert"].includes(alert_type)) {
             return;
         }
+        const defaultMessages = {
+            "error-alert": "Intersections of more than 3 circles cannot be shaded.",
+            "label-alert": "Labeling mode enabled. Click a circle to begin labeling, or click the label button to stop.",
+            "shade-alert": "Shading mode enabled. Click the shade button to stop shading.",
+        };
+        const message = alert_text || defaultMessages[alert_type];
         if (alert_name in this.alerts) {
+            this.showToast(alert_type, message);
             return;
         }
-        let cloned_obj = $("#" + alert_type).clone();
-        cloned_obj.removeClass("d-none");
-        if (alert_text !== null) {
-            cloned_obj.find("p").text(alert_text);
-        }
-        $("#alerts-parent").append(cloned_obj);
-        this.alerts[alert_name] = cloned_obj;
+        this.alerts[alert_name] = { type: alert_type, message };
+        this.showToast(alert_type, message);
     }
 
     removeAlert(alert_name) {
         if (alert_name in this.alerts) {
-            this.alerts[alert_name].remove();
             delete this.alerts[alert_name];
+        }
+    }
+
+    showToast(alert_type, message) {
+        if (!this.rootElem) {
+            return;
+        }
+        const toast = $(this.rootElem).find(".venn-toast")[0];
+        if (!toast) {
+            return;
+        }
+        const colorClass = alert_type === "error-alert" ? "text-bg-danger" : "text-bg-primary";
+        $(toast)
+            .removeClass("text-bg-danger text-bg-primary")
+            .addClass(colorClass)
+            .find(".toast-body")
+            .text(message);
+
+        if (window.bootstrap && window.bootstrap.Toast) {
+            window.bootstrap.Toast.getOrCreateInstance(toast, { delay: 4000 }).show();
+        } else {
+            $(toast).addClass("show");
+            window.setTimeout(() => $(toast).removeClass("show"), 4000);
         }
     }
 
@@ -569,7 +625,6 @@ class PLDrawingVennApi {
         } else {
             this.removeAlert("intersecting_circles");
         }
-        this.checkCurrentAlerts();
 
         if (this.canvas instanceof fabric.Canvas) {
             let group_object = this.canvas.getActiveObject();
@@ -744,9 +799,50 @@ class PLDrawingVennApi {
     }
 }
 
+function updateShadeButtonState(button, isShading) {
+    $(button)
+        .toggleClass("active btn-primary", isShading)
+        .toggleClass("btn-outline-primary", !isShading)
+        .attr("aria-pressed", isShading ? "true" : "false");
+}
+
+function isRightClick(event) {
+    return event && (event.button === 2 || event.which === 3);
+}
+
+function isShadeGesture(event, apiInstance) {
+    return Boolean(event && (event.shiftKey || apiInstance.isShading || isRightClick(event)));
+}
+
+function setupInstructionsPanel(rootElem) {
+    const toggleButton = $(rootElem).find('[data-venn-instructions-toggle="true"]');
+    const closeButton = $(rootElem).find('[data-venn-instructions-close="true"]');
+    const panel = $(rootElem).find('.venn-instructions-panel');
+    if (!toggleButton.length || !panel.length) {
+        return;
+    }
+
+    const setOpen = (isOpen) => {
+        panel.toggleClass("d-none", !isOpen);
+        toggleButton.attr("aria-expanded", isOpen ? "true" : "false");
+    };
+
+    toggleButton.on('click', () => {
+        setOpen(panel.hasClass("d-none"));
+    });
+    closeButton.on('click', () => setOpen(false));
+    $(rootElem).on('keydown', (event) => {
+        if (event.key === "Escape") {
+            setOpen(false);
+        }
+    });
+}
+
 function setupCanvas(apiInstance, root_elem, elem_options, existing_answer_submission) {
     apiInstance.registerElements('_base', { 'pl-venn-circle-add': PLVennCircleAddElement });
     apis.push(apiInstance);
+    apiInstance.rootElem = root_elem;
+    setupInstructionsPanel(root_elem);
     let canvas_elem = $(root_elem).find('canvas')[0];
     let html_input = $(root_elem).find('input');
     let id = $(root_elem).find('canvas')[0].id;
@@ -783,13 +879,18 @@ function setupCanvas(apiInstance, root_elem, elem_options, existing_answer_submi
 
     apiInstance.disabled_actions = elem_options["disabled_actions"];
     apiInstance.defaultRadius = elem_options["default_radius"];
+    apiInstance.labelPosition = elem_options["label_position"] || "above";
 
     let canvas;
     if (elem_options.editable) {
-        canvas = new fabric.Canvas(canvas_elem);
+        canvas = new fabric.Canvas(canvas_elem, {
+            fireRightClick: true,
+            stopContextMenu: true,
+        });
     } else {
         canvas = new fabric.StaticCanvas(canvas_elem);
     }
+    canvas_elem.addEventListener('contextmenu', (event) => event.preventDefault());
     apiInstance.canvas = canvas;
 
     let drawing_btns = $(root_elem).find('button');
@@ -811,17 +912,17 @@ function setupCanvas(apiInstance, root_elem, elem_options, existing_answer_submi
                 } else {
                     apiInstance.toggleLabelingMode(canvas);
                 }
-                apiInstance.checkCurrentAlerts();
             });
         } else if (buttonName === "shade") {
+            updateShadeButtonState(btn, apiInstance.isShading);
             $(btn).click(() => {
                 if (apiInstance.isShading) {
                     apiInstance.removeAlert("shade_alert");
                 } else {
                     apiInstance.addAlert("shade_alert", "shade-alert")
                 }
-                apiInstance.checkCurrentAlerts();
                 apiInstance.isShading = !apiInstance.isShading;
+                updateShadeButtonState(btn, apiInstance.isShading);
             });
         }
     });
@@ -903,7 +1004,7 @@ function setupCanvas(apiInstance, root_elem, elem_options, existing_answer_submi
             }
             canvas.renderAll();
             prev_section = [-1];
-        } else if ((e.e.shiftKey || apiInstance.isShading) && !apiInstance.disabled_actions["shade"]) {
+        } else if (isShadeGesture(e.e, apiInstance) && !apiInstance.disabled_actions["shade"]) {
             canvas.discardActiveObject();
             if (id == 'drawing_element') {
                 canvas.setCursor('crosshair');
@@ -952,7 +1053,11 @@ function setupCanvas(apiInstance, root_elem, elem_options, existing_answer_submi
     });
 
     canvas.on('mouse:down', (e) => {
-        if ((e.e.shiftKey || apiInstance.isShading) && !apiInstance.disabled_actions["shade"]) {
+        const shadeGesture = isShadeGesture(e.e, apiInstance);
+        if (!shadeGesture && apiInstance.editLabelFromTarget(canvas, e.target)) {
+            return;
+        }
+        if (shadeGesture && !apiInstance.disabled_actions["shade"]) {
             if (id == 'drawing_element') {
                 const pointer = canvas.getPointer(e.e);
                 let circles = apiInstance.circles;
@@ -966,7 +1071,7 @@ function setupCanvas(apiInstance, root_elem, elem_options, existing_answer_submi
                 }
 
                 if (clicked_objects.length <= 3) {
-                    clicked_obj_str = clicked_objects.toString();
+                    let clicked_obj_str = clicked_objects.toString();
                     if (Object.hasOwn(selected_areas, clicked_objects)) {
                         selected_areas[clicked_obj_str] = !selected_areas[clicked_obj_str];
                     } else {
@@ -988,11 +1093,23 @@ function setupCanvas(apiInstance, root_elem, elem_options, existing_answer_submi
 
 
     canvas.on('mouse:dblclick', function(e) {
+        if (apiInstance.isLabelTarget(e.target)) {
+            apiInstance.editLabelFromTarget(canvas, e.target);
+            return;
+        }
+        if (apiInstance.isLabeling) {
+            return;
+        }
+        if (e.target && e.target.type === 'circle' && !apiInstance.disabled_actions["label"]) {
+            canvas.setActiveObject(e.target);
+            apiInstance.toggleLabelingMode(canvas, false);
+            return;
+        }
         if (apiInstance.disabled_actions["insert"]) {
             return;
         }
         const pointer = canvas.getPointer(e.e);
-        threshold = 50;
+        let threshold = 50;
         if (e.target && e.target.type === 'circle') {
             if (Math.abs(pointer.x - e.target.left) > threshold || Math.abs(pointer.y - e.target.top) > threshold) {
                 const elem = apiInstance.getElement("pl-venn-circle-add");

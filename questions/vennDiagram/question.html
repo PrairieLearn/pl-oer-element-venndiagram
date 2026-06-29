@@ -52,10 +52,10 @@
   <div class="card-body">
     <pl-question-panel>
     <p>Because student-defined labels need to match the expected ones exactly, it can be
-    preferrable to pre-define circles and disable re-labeling or adding/removing circles
+    preferable to pre-define circles and disable re-labeling or adding/removing circles
     by setting the <code>disable-labeling</code> and <code>disable-insertion</code> attributes
     to <code>true</code>. In this example, <code>disable-sample-space</code> is also set
-    to true so that the space surrounding the circles cannot be shaded. Here, the 3 circles 
+    to <code>true</code> so that the space surrounding the circles cannot be shaded. Here, the 3 circles 
     must be moved to overlap, and the overlapping region must be shaded.</p>
     </pl-question-panel>
     <pl-drawing-venn answers-name="q3" disable-labeling="true" disable-insertion="true" disable-sample-space="true" correct-answer="A&B&C">
@@ -84,6 +84,35 @@
             <pl-circle-venn x1="300" y1="150" label="B"></pl-circle-venn>
             <pl-circle-venn x1="250" y1="400" label="C"></pl-circle-venn>
         </pl-drawing-venn-initial>
+    </pl-drawing-venn>
+  </div>
+</div>
+
+<div class="card my-2">
+  <div class="card-header">Part 5</div>
+  <div class="card-body">
+    <pl-question-panel>
+    <p>The <code>label-position</code> attribute controls whether circle labels are rendered
+    above, below, or in the center of their circles. This static example uses centered labels.</p>
+    </pl-question-panel>
+    <pl-drawing-venn answers-name="q5" gradable="false" width="400" height="300" label-position="center">
+        <pl-circle-venn x1="130" y1="150" label="A"></pl-circle-venn>
+        <pl-circle-venn x1="270" y1="150" label="B"></pl-circle-venn>
+        <pl-region-venn region="A&B"></pl-region-venn>
+    </pl-drawing-venn>
+  </div>
+</div>
+
+<div class="card my-2">
+  <div class="card-header">Part 6</div>
+  <div class="card-body">
+    <pl-question-panel>
+    <p>The <code>hide-tool-buttons</code> attribute is an advanced option that hides the buttons 
+    on the right but leaves the canvas editable through direct interactions and keyboard shortcuts.</p>
+    </pl-question-panel>
+    <pl-drawing-venn answers-name="q6" hide-tool-buttons="true" correct-answer="A&B">
+        <pl-circle-venn x1="200" y1="150" label="A"></pl-circle-venn>
+        <pl-circle-venn x1="300" y1="150" label="B"></pl-circle-venn>
     </pl-drawing-venn>
   </div>
 </div>
