@@ -292,7 +292,7 @@ def prepare(element_html: str, data: pl.QuestionData) -> None:
             raise Exception("All circles must be placed completely within the canvas.")
 
         if label in circle_labels:
-            raise Exception("All cicle labels must be unique.")
+            raise Exception("All circle labels must be unique.")
         elif not label.isidentifier():
             raise Exception("All circle labels must be valid Python identifiers.")
         else:
