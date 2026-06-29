@@ -28,7 +28,7 @@ This element creates a canvas for Venn diagrams that can be used both for intera
 <img src="example-fill.png" width="500">
 
 ```html
-<pl-drawing-venn answers-name="venn" disable-labeling="true" disable-movement="true" correct-answer="~(A&B)|C">
+<pl-drawing-venn answers-name="venn" shading-only="true" correct-answer="~(A&B)|C">
     <pl-drawing-venn-initial>
         <pl-circle-venn x1="200" y1="150" label="A"></pl-circle-venn>
         <pl-circle-venn x1="300" y1="150" label="B"></pl-circle-venn>
@@ -63,9 +63,9 @@ Note that the shading of both non-interactive and interactive diagrams is limite
 | `gradable` | boolean (default: `true`) | If set to `true`, the element is interactive and will be graded. Otherwise, the diagram will be used for display only. |
 | `correct-answer` | string (required if gradable) | Only relevant if `gradable` is `true`. Correct coloring of regions to be checked during grading. This should be specified as an expression that uses the labels of circles and set operators (e.g., `A&B` if the overlapping region of the circles A and B must be colored in a correct answer). The following set operations are supported: complement (`~` or `!`), union (`_U_`, `_u_`, or `\|`), intersection (`^`, `&`, `_i_`, or `_I_`), and set difference (`-`). Alternatively, this can also be specified as a list of unions in square brackets (e.g., `[A^B, B^C]` is equivalent to `(A^B) \| (B^C)`). |
 | `disable-insertion` | boolean (default: `false`)  | Only relevant if `gradable` is `true`. If set to `true`, students will not be able to insert and delete circles in the canvas. |
-| `disable-movement` | boolean (default: `false`)  | Only relevant if `gradable` is `true`. If set to `true`, students will not be able to move circles in the canvas. Disabling circle movement also disables insertion. |
 | `disable-labeling` | boolean (default: `false`)  | Only relevant if `gradable` is `true`. If set to `true`, students will be unable to label circles in the canvas. |
 | `disable-shading` | boolean (default: `false`)  | Only relevant if `gradable` is `true`. If set to `true`, students will be unable to shade circles in the canvas. |
+| `shading-only` | boolean (default: `false`)  | Only relevant if `gradable` is `true`. If set to `true`, shading mode will always be enabled and movement, insertion, deletion, and labeling are disabled. This mode should not be combined with any of the `disable` options above. |
 | `hide-score-badge` | boolean (default: `false`) | Only relevant if `gradable` is `true`. If set to `true`, no score badge will be shown above the canvas to give students feedback on their submission. |
 | `hide-answer-panel` | boolean (default: `false`) | Only relevant if `gradable` is `true`. If set to `true`, the correct answer is not shown to students after they submit their answer. |
 | `hide-help-text` | boolean (default: `false`) | Only relevant if `gradable` is `true`. If set to `true`, the help text that contains the instructions on how to use drawing canvas is disabled. |

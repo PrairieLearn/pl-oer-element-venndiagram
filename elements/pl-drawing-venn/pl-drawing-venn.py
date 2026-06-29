@@ -21,7 +21,7 @@ CORRECT_ANSWER_DEFAULT = ""
 DISABLE_INSERTION_DEFAULT = False
 DISABLE_LABELING_DEFAULT = False
 DISABLE_SHADING_DEFAULT = False
-DISABLE_MOVEMENT_DEFAULT = False
+SHADING_ONLY_DEFAULT = False
 CIRCLE_RADIUS_DEFAULT = 80
 LABEL_POSITION_DEFAULT = "above"
 LABEL_POSITIONS = {"above", "below", "center"}
@@ -87,7 +87,7 @@ def render_controls(template, element, button_data):
 
     markup = []
     for button in button_data:
-        if not button["disabled"] and gradable:
+        if not button.get("button_disabled", button["disabled"]) and gradable:
             markup.append(
                 chevron.render(
                     template,
@@ -110,6 +110,34 @@ def is_valid_python(code):
     except SyntaxError:
         return False
     return True
+
+
+def get_shading_only_attrib(element):
+    if element.get("shading-only") is not None:
+        return pl.get_boolean_attrib(element, "shading-only", SHADING_ONLY_DEFAULT)
+    return pl.get_boolean_attrib(element, "disable-movement", SHADING_ONLY_DEFAULT)
+
+
+def validate_shading_only_attribs(element):
+    if not pl.get_boolean_attrib(element, "shading-only", SHADING_ONLY_DEFAULT):
+        return
+
+    conflicting_attrs = [
+        "disable-insertion",
+        "disable-labeling",
+        "disable-shading",
+    ]
+    conflicts = [
+        attr
+        for attr in conflicting_attrs
+        if pl.get_boolean_attrib(element, attr, False)
+    ]
+    if conflicts:
+        raise Exception(
+            "`shading-only` cannot be combined with "
+            + ", ".join(f"`{attr}`" for attr in conflicts)
+            + "."
+        )
 
 
 def validate_correct_answers(correct_answers, labels):
@@ -221,6 +249,7 @@ def prepare(element_html: str, data: pl.QuestionData) -> None:
         "disable-labeling",
         "disable-shading",
         "circle-radius",
+        "shading-only",
         "disable-movement",
         "label-position",
     ]
@@ -247,6 +276,7 @@ def prepare(element_html: str, data: pl.QuestionData) -> None:
         element, "label-position", LABEL_POSITION_DEFAULT
     )
 
+    validate_shading_only_attribs(element)
     if label_position not in LABEL_POSITIONS:
         raise Exception('Label position must be one of "above", "below", or "center".')
     if circle_radius <= 0:
@@ -349,20 +379,19 @@ def render(element_html: str, data: pl.QuestionData) -> str:
     hide_answer_panel = pl.get_boolean_attrib(
         element, "hide-answer-panel", HIDE_ANSWER_PANEL_DEFAULT
     )
-    disable_movement = pl.get_boolean_attrib(
-        element, "disable-movement", DISABLE_MOVEMENT_DEFAULT
-    )
+    shading_only = get_shading_only_attrib(element)
 
     graded = data["params"].get("is_graded", False).get(name, False)
 
     disable_insert = (
         pl.get_boolean_attrib(element, "disable-insertion", DISABLE_INSERTION_DEFAULT)
-        if not disable_movement
-        else disable_movement
+        if not shading_only
+        else shading_only
     )
     disable_delete = disable_insert
-    disable_label = pl.get_boolean_attrib(
-        element, "disable-labeling", DISABLE_LABELING_DEFAULT
+    disable_label = (
+        pl.get_boolean_attrib(element, "disable-labeling", DISABLE_LABELING_DEFAULT)
+        or shading_only
     )
     disable_shade = pl.get_boolean_attrib(
         element, "disable-shading", DISABLE_SHADING_DEFAULT
@@ -390,32 +419,60 @@ def render(element_html: str, data: pl.QuestionData) -> str:
             "type_name": "insert",
             "label": "Insert Circle",
             "disabled": disable_insert,
+            "button_disabled": disable_insert,
+            "show_button_hint": show_tool_buttons,
             "icon": "bi bi-plus-lg",
-            "text": "Create a circle: <strong>Double click</strong> or click the",
+            "text": (
+                "Create a circle: <strong>Double click</strong> or click the"
+                if show_tool_buttons
+                else "Create a circle: <strong>Double click</strong> in the canvas."
+            ),
             "tooltip": "Add Circle",
         },
         {
             "type_name": "delete",
             "label": "Delete Circle",
             "disabled": disable_insert,
+            "button_disabled": disable_insert,
+            "show_button_hint": show_tool_buttons,
             "icon": "bi bi-trash",
-            "text": "Delete a circle: Select a circle and press the <strong>Delete/Backspace</strong> key or click the",
+            "text": (
+                "Delete a circle: Select a circle and press the <strong>Delete/Backspace</strong> key or click the"
+                if show_tool_buttons
+                else "Delete a circle: Select it and press the <strong>Delete/Backspace</strong> key."
+            ),
             "tooltip": "Remove Circle",
         },
         {
             "type_name": "label",
             "label": "Label Circle",
             "disabled": disable_label,
+            "button_disabled": disable_label,
+            "show_button_hint": show_tool_buttons,
             "icon": "bi bi-textarea-t",
-            "text": "Label a circle: Select a circle and begin typing or click the ",
+            "text": (
+                "Label a circle: Select a circle and begin typing or click the"
+                if show_tool_buttons
+                else "Label a circle: Select it and begin typing, double click it, or click its label."
+            ),
             "tooltip": "Label Circle",
         },
         {
             "type_name": "shade",
             "label": "Enable Shading",
             "disabled": disable_shade,
+            "button_disabled": disable_shade or shading_only,
+            "show_button_hint": show_tool_buttons and not shading_only,
             "icon": "bi bi-paint-bucket",
-            "text": "Shade a region: Hold the <strong>Shift</strong> key and select a region or click the",
+            "text": (
+                "Shade a region: Select a region in the canvas."
+                if shading_only
+                else (
+                    "Shade a region: Hold the <strong>Shift</strong> key and select a region or click the"
+                    if show_tool_buttons
+                    else "Shade a region: Hold the <strong>Shift</strong> key and select a region, or right-click in the region."
+                )
+            ),
             "tooltip": "Shade Circle",
         },
     ]
@@ -442,9 +499,8 @@ def render(element_html: str, data: pl.QuestionData) -> str:
         "label_position": pl.get_string_attrib(
             element, "label-position", LABEL_POSITION_DEFAULT
         ),
-        "disable_movement": pl.get_boolean_attrib(
-            element, "disable-movement", DISABLE_MOVEMENT_DEFAULT
-        ),
+        "shading_only": shading_only,
+        "always_shade": shading_only and not disable_shade,
         "disabled_actions": {
             "insert": disable_insert,
             "delete": disable_delete,

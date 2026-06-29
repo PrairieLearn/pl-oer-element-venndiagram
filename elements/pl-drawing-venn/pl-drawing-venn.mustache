@@ -15,7 +15,7 @@
     </div>
   </div>
   {{/editable}}
-  <div>
+  <div class="pl-drawing-main">
     <div class="venn-diagram-score-badge-wrapper">
     {{#parse_error}}
         <a
@@ -69,7 +69,7 @@
             <ul class="instructions-list">
             {{#button_data}}
             {{^disabled}}
-              <li>{{{text}}} <i class="{{icon}}"></i> button.</li>
+              <li>{{{text}}}{{#show_button_hint}} <i class="{{icon}}"></i> button.{{/show_button_hint}}</li>
             {{/disabled}}
             {{/button_data}}
             </ul>

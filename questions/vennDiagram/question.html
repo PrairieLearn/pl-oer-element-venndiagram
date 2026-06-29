@@ -72,13 +72,14 @@
   <div class="card-header">Part 4</div>
   <div class="card-body">
     <pl-question-panel>
-    <p>In this variant of the previous question, moving circles is disabled by setting
-    <code>disable-movement</code> to <code>true</code>. This also disables adding/removing
-    circles, and reduces the degree of freedom for students to only shading the existing
-    circles. Here, the overlapping region between A and B, as well as the entire circle C
+    <p>In this variant of the previous question, all editing other than changing the
+    shading is disabled by the <code>shading-only</code> attribute being <code>true</code>. 
+    This reduces the degree of freedom for students and makes interactions with the canvas
+    significantly easier because the shading mode can always be enabled by default. 
+    Here, the overlapping region between A and B, as well as the entire circle C
     must be shaded.</p>
     </pl-question-panel>
-    <pl-drawing-venn answers-name="q4" disable-labeling="true" disable-movement="true" correct-answer="(A&B)|C">
+    <pl-drawing-venn answers-name="q4" shading-only="true" correct-answer="(A&B)|C">
         <pl-drawing-venn-initial>
             <pl-circle-venn x1="200" y1="150" label="A"></pl-circle-venn>
             <pl-circle-venn x1="300" y1="150" label="B"></pl-circle-venn>

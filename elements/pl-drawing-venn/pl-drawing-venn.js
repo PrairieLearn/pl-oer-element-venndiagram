@@ -103,6 +103,7 @@ class PLDrawingVennApi {
         circle.set({
             selectable: !disableMovement,
             hasControls: false,
+            hoverCursor: disableMovement ? 'default' : 'move',
             id: new_id
         });
         this.circles[new_id] = circle;
@@ -299,7 +300,7 @@ class PLDrawingVennApi {
             fontSize: editableLabel.fontSize,
             selectable: false,
             hasControls: false,
-            hoverCursor: 'text',
+            hoverCursor: this.disabled_actions["label"] ? 'default' : 'text',
         });
         this.circleLabels[circleId] = fixedLabel;
         canvas.add(fixedLabel);
@@ -406,7 +407,7 @@ class PLDrawingVennApi {
             fontSize: 20,
             selectable: false,
             hasControls: false,
-            hoverCursor: 'text',
+            hoverCursor: this.disabled_actions["label"] ? 'default' : 'text',
         });
 
         this.circleLabels[circle_id] = label;
@@ -838,6 +839,39 @@ function setupInstructionsPanel(rootElem) {
     });
 }
 
+function updateToolbarLayout(rootElem) {
+    const container = $(rootElem);
+    const sidebar = container.find('.pl-drawing-sidebar')[0];
+    const canvasWrapper = container.find('.pl-drawing-canvas-wrapper')[0];
+    if (!sidebar || !canvasWrapper) {
+        container.removeClass('toolbar-below');
+        return;
+    }
+
+    container.removeClass('toolbar-below');
+    const availableWidth = container[0].clientWidth;
+    const canvasWidth = canvasWrapper.getBoundingClientRect().width;
+    const buttonWidth = Math.max(
+        ...$(sidebar).find('button').toArray().map((button) => button.getBoundingClientRect().width),
+        sidebar.getBoundingClientRect().width,
+    );
+    const gap = parseFloat(window.getComputedStyle(container[0]).columnGap) || 0;
+
+    container.toggleClass('toolbar-below', availableWidth < canvasWidth + buttonWidth + gap);
+}
+
+function getAvailableCanvasWidth(rootElem, configuredWidth) {
+    const container = $(rootElem);
+    const wasToolbarBelow = container.hasClass('toolbar-below');
+    container.addClass('toolbar-below');
+    const availableWidth = Math.min(
+        rootElem.parentElement ? rootElem.parentElement.clientWidth : window.innerWidth,
+        rootElem.clientWidth || window.innerWidth,
+    );
+    container.toggleClass('toolbar-below', wasToolbarBelow);
+    return Math.min(configuredWidth, availableWidth);
+}
+
 function setupCanvas(apiInstance, root_elem, elem_options, existing_answer_submission) {
     apiInstance.registerElements('_base', { 'pl-venn-circle-add': PLVennCircleAddElement });
     apis.push(apiInstance);
@@ -849,26 +883,12 @@ function setupCanvas(apiInstance, root_elem, elem_options, existing_answer_submi
     cloned_opts = "";
     fabric.Object.prototype.transparentCorners = false;
 
-    let canvas_width = parseFloat(elem_options.width);
+    const configured_canvas_width = parseFloat(elem_options.width);
+    let canvas_width = getAvailableCanvasWidth(root_elem, configured_canvas_width);
     let canvas_height = parseFloat(elem_options.height);
-    if ($(window).width() < 768) {
-        if (root_elem.offsetWidth == 0) {
-            canvas_width = Math.min(canvas_width, $(window).width() * .85);
-        } else {
-            canvas_width = Math.min(canvas_width, root_elem.offsetWidth);
-        }
-    } else {
-        if (root_elem.offsetWidth == 0) {
-            canvas_width = Math.min(canvas_width, $(window).width() - 100);
-        } else {
-            canvas_width = Math.min(canvas_width, root_elem.offsetWidth - 100);
-        }
-
-
-    }
     canvas_height = canvas_height;
 
-    let disableMovement = elem_options.disable_movement || false;
+    let disableMovement = elem_options.shading_only || false;
     apiInstance.disableMovement = disableMovement;
 
     let includeSampleSpace = elem_options.include_sample_space;
@@ -880,6 +900,7 @@ function setupCanvas(apiInstance, root_elem, elem_options, existing_answer_submi
     apiInstance.disabled_actions = elem_options["disabled_actions"];
     apiInstance.defaultRadius = elem_options["default_radius"];
     apiInstance.labelPosition = elem_options["label_position"] || "above";
+    apiInstance.isShading = Boolean(elem_options["always_shade"]);
 
     let canvas;
     if (elem_options.editable) {
@@ -892,6 +913,21 @@ function setupCanvas(apiInstance, root_elem, elem_options, existing_answer_submi
     }
     canvas_elem.addEventListener('contextmenu', (event) => event.preventDefault());
     apiInstance.canvas = canvas;
+
+    const resizeCanvas = () => {
+        canvas_width = getAvailableCanvasWidth(root_elem, configured_canvas_width);
+        canvas.setWidth(canvas_width);
+        canvas.setHeight(canvas_height);
+        canvas.calcOffset();
+        updateToolbarLayout(root_elem);
+        canvas.requestRenderAll();
+    };
+    resizeCanvas();
+    $(window).on('resize', resizeCanvas);
+    if (window.ResizeObserver) {
+        const resizeObserver = new ResizeObserver(resizeCanvas);
+        resizeObserver.observe(root_elem.parentElement || root_elem);
+    }
 
     let drawing_btns = $(root_elem).find('button');
     drawing_btns.each(function(i, btn) {
@@ -1007,7 +1043,7 @@ function setupCanvas(apiInstance, root_elem, elem_options, existing_answer_submi
         } else if (isShadeGesture(e.e, apiInstance) && !apiInstance.disabled_actions["shade"]) {
             canvas.discardActiveObject();
             if (id == 'drawing_element') {
-                canvas.setCursor('crosshair');
+                canvas.setCursor(apiInstance.disableMovement ? 'default' : 'crosshair');
                 let hovered_objects = [];
 
                 const pointer = canvas.getPointer(e.e);
